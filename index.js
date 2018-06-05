@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-const router = require('./router');
+const authRoutes = require('./routes/authRoutes');
 
 // DB Setup
 mongoose.connect('mongodb://localhost/cards')
@@ -15,7 +15,7 @@ mongoose.connect('mongodb://localhost/cards')
 app.use(morgan('combined'));
 app.use(cors());
 app.use(bodyParser.json({ type: '*/*' }));
-router(app);
+authRoutes(app);
 
 // Server Setup
 const port = process.env.PORT || 3090;

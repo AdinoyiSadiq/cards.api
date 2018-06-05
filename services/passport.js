@@ -1,9 +1,13 @@
+const mongoose = require('mongoose');
 const passport = require('passport');
-const User = require('../models/user');
 const config = require('../config');
+
 const JwtStrategy = require('passport-jwt').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local');
+
+const User = mongoose.model('user');
 
 // Create local strategy
 const localOptions = { usernameField: 'email' };
@@ -20,6 +24,10 @@ const localLogin = new LocalStrategy(localOptions, function(email, password, don
 			return done(null, false);
 		}
 
+		if (!user.password) {
+			return done(null, false);
+		}
+		
 		// compare passwords - is `password` equal to user password?
 		user.comparePassword(password, function(err, isMatch) {
 			if (err) {
@@ -59,7 +67,28 @@ const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
 	});
 });
 
+const facebookLogin = 	new FacebookStrategy({
+		clientID: config.facebookClientID,
+		clientSecret: config.facebookClientSecret,
+		callbackURL: '/auth/facebook/callback',
+		profileFields: ['id', 'displayName', 'email']
+	}, (accessToken, refreshToken, profile, done) => {
+		console.log(profile)
+		User.findOne({ facebookId: profile.id })
+			.then((existingUser) => {
+				if (existingUser) {
+					// we already have a record with the given profile ID
+					done(null, existingUser);
+				} else {
+					// we don't have a user record with this ID, make a new record!
+					new User({ facebookId: profile.id, email: profile.emails[0].value })
+						.save()
+						.then(user => done(null, user));
+				}
+			});
+});
 
 // Tell passport to use this strategy
 passport.use(jwtLogin);
 passport.use(localLogin);
+passport.use(facebookLogin);
