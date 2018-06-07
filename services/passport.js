@@ -67,13 +67,12 @@ const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
 	});
 });
 
-const facebookLogin = 	new FacebookStrategy({
+const facebookLogin = new FacebookStrategy({
 		clientID: config.facebookClientID,
 		clientSecret: config.facebookClientSecret,
 		callbackURL: '/auth/facebook/callback',
 		profileFields: ['id', 'displayName', 'email']
 	}, (accessToken, refreshToken, profile, done) => {
-		console.log(profile)
 		User.findOne({ facebookId: profile.id })
 			.then((existingUser) => {
 				if (existingUser) {

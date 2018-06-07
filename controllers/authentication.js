@@ -52,5 +52,5 @@ exports.signup = function(req, res, next) {
 exports.facebookSignin = function(req, res, next) {
 	// User has already been auth'd
 	// We just need to give them a token
-	res.redirect('/auth/?=' + tokenForUser(req.user))
+	res.redirect('http://localhost:3000/auth/' + tokenForUser(req.user))
 }
