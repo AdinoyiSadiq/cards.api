@@ -12,7 +12,7 @@ module.exports = function(app) {
 		res.send({ message: 'Super secret code is ABC123' });
 	});
 
-	app.post('/signin', requireSignin, Authentication.signin)
+	app.post('/signin', requireSignin, Authentication.signin);
 	app.post('/signup', Authentication.signup);
 
 	app.get('/auth/facebook', requireFbSignin);
