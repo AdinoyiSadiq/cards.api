@@ -6,7 +6,11 @@ const bcrypt = require('bcrypt-nodejs');
 const userSchema = new Schema({
 	facebookId: String,
 	email: { type: String, unique: true, lowercase: true },
-	password: String
+	password: String,
+	cards: [{
+		type: Schema.Types.ObjectId,
+		ref: 'card'
+	}]
 });
 
 // On Save Hook, encrypt password
@@ -49,8 +53,8 @@ userSchema.methods.comparePassword = function(candidatePassword, callback) {
 }
 
 // Create the model class
-const ModelClass = mongoose.model('user', userSchema);
+const User = mongoose.model('user', userSchema);
 
 // Export the model
-module.exports = ModelClass;
+module.exports = User;
 
