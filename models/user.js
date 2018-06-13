@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const defaultCardSchema = require('./schema/defaultCard');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt-nodejs');
 
@@ -7,6 +8,7 @@ const userSchema = new Schema({
 	facebookId: String,
 	email: { type: String, unique: true, lowercase: true },
 	password: String,
+	defaultCard: defaultCardSchema,
 	cards: [{
 		type: Schema.Types.ObjectId,
 		ref: 'card'

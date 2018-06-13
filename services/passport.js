@@ -71,7 +71,7 @@ const facebookLogin = new FacebookStrategy({
 		clientID: config.facebookClientID,
 		clientSecret: config.facebookClientSecret,
 		callbackURL: '/auth/facebook/callback',
-		profileFields: ['id', 'displayName', 'email']
+		profileFields: ['id', 'displayName', 'email', 'first_name', 'gender', 'last_name']
 	}, (accessToken, refreshToken, profile, done) => {
 		User.findOne({ facebookId: profile.id })
 			.then((existingUser) => {
@@ -80,7 +80,17 @@ const facebookLogin = new FacebookStrategy({
 					done(null, existingUser);
 				} else {
 					// we don't have a user record with this ID, make a new record!
-					new User({ facebookId: profile.id, email: profile.emails[0].value })
+					const {name, emails, id } = profile;
+
+					new User({ 
+						facebookId: id, 
+						email: emails[0].value,
+						defaultCard: {
+							firstName: name.givenName,
+							lastName: name.familyName,
+							email: emails[0].value
+						} 
+					})
 						.save()
 						.then(user => done(null, user));
 				}
